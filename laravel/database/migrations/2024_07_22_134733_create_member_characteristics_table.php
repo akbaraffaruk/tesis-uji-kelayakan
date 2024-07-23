@@ -14,16 +14,18 @@ return new class extends Migration
         Schema::create('member_characteristics', function (Blueprint $table) {
             $table->id();
             $table->string('member_number')->unique();
+
             $table->string('name');
             $table->string('identity_number', 16)->unique();
+            $table->string('place_of_birth')->nullable();
+            $table->date('date_of_birth')->nullable();
             $table->string('mother_name')->nullable();
             $table->string('father_name')->nullable();
-            $table->char('gender', 1)->nullable();
-            $table->string('place_of_birth')->nullable();
             $table->string('work')->nullable();
             $table->string('work_description')->nullable();
-            $table->string('source_of_income')->nullable();
             $table->string('address')->nullable();
+            
+            $table->string('source_of_income')->nullable();
             $table->integer('rice_consumption')->nullable();
             $table->integer('rice_price')->nullable();
             $table->integer('kitchen_shop')->nullable();
@@ -44,8 +46,8 @@ return new class extends Migration
             $table->integer('tenor')->nullable();
             $table->integer('pokok')->nullable();
             $table->integer('margin')->nullable();
-            $table->string('martial_status')->nullable();
             $table->integer('installment')->nullable();
+            $table->string('buyer')->nullable();
             $table->timestamps();
         });
     }
