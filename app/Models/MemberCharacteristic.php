@@ -14,30 +14,42 @@ class MemberCharacteristic extends Model
 
     protected $fillable = [
         'member_number',
+
         'name',
+        'gender',
         'identity_number',
-        'mother_name',
-        'father_name',
         'place_of_birth',
         'date_of_birth',
+        'address',
+
         'work',
         'work_description',
         'source_of_income',
-        'address',
+
+        'mother_name',
+        'father_name',
+
+        'savings',
+
         'rice_consumption',
         'rice_price',
         'kitchen_shop',
         'electricity_bills',
         'education',
         'other_costs',
-        'savings',
-        'home_status',
+        'total_expenses',
+
+        'house_status',
         'yard_area',
+        'house_area',
         'roof_type',
         'house_wall',
+        'house_floor',
         'type_of_lighting',
         'latrine_type',
         'source_of_drinking_water',
+        'total_house_index',
+
         'total_household_income',
         'total_household_members',
         'income_per_capita',
