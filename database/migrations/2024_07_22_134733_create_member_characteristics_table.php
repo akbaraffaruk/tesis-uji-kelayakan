@@ -53,6 +53,7 @@ return new class extends Migration
             $table->integer('total_household_income')->nullable();
             $table->integer('total_household_members')->nullable();
             $table->integer('income_per_capita')->nullable();
+            
             $table->integer('tenor')->nullable();
             $table->integer('pokok')->nullable();
             $table->integer('margin')->nullable();

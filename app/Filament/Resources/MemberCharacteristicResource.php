@@ -140,9 +140,11 @@ class MemberCharacteristicResource extends Resource
                                 ->schema([
                                     Components\TextInput::make('mother_name')
                                         ->label('Nama Ibu Kandung')
+                                        ->required()
                                         ->placeholder('Nama Ibu Kandung'),
                                     Components\TextInput::make('father_name')
                                         ->label('Nama Ayah Kandung')
+                                        ->required()
                                         ->placeholder('Nama Ayah Kandung'),
                                 ]),
                         ]),
@@ -154,6 +156,7 @@ class MemberCharacteristicResource extends Resource
                                 ->required()
                                 ->Prefix('Rp')
                                 ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
                                 ->placeholder('Tabungan')
                                 ->default(0),
                         ]),
@@ -171,6 +174,7 @@ class MemberCharacteristicResource extends Resource
                                     Components\TextInput::make('rice_price')
                                         ->numeric()
                                         ->mask(RawJs::make('$money($input)'))
+                                        ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
                                         ->prefix('Rp')
                                         ->label('Harga Beras')
                                         ->placeholder('Harga Beras per Bulan')
@@ -195,12 +199,14 @@ class MemberCharacteristicResource extends Resource
                                             return "Total: Rp" . number_format($totalRicePrice, 0, ',', '.');
                                         }, true)
                                         ->required(),
-                                    Components\Hidden::make('total_rice_price'),
+                                    Components\Hidden::make('total_rice_price')
+                                        ->dehydrated(false),
                                 ]),
 
                             Components\TextInput::make('kitchen_shop')
                                 ->numeric()
                                 ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
                                 ->prefix('Rp')
                                 ->label('Belanja Dapur')
                                 ->placeholder('Pengeluaran Belanja Dapur/Bulan')
@@ -217,6 +223,7 @@ class MemberCharacteristicResource extends Resource
                             Components\TextInput::make('electricity_bills')
                                 ->numeric()
                                 ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
                                 ->prefix('Rp')
                                 ->label('Rekening Listrik')
                                 ->placeholder('Pengeluaran Listrik/Bulan')
@@ -233,6 +240,7 @@ class MemberCharacteristicResource extends Resource
                             Components\TextInput::make('education')
                                 ->numeric()
                                 ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
                                 ->prefix('Rp')
                                 ->label('Pendidikan')
                                 ->placeholder('Pengeluaran Dana Pendidikan/Bulan')
@@ -249,6 +257,7 @@ class MemberCharacteristicResource extends Resource
                             Components\TextInput::make('other_costs')
                                 ->numeric()
                                 ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
                                 ->prefix('Rp')
                                 ->label('Lainnya')
                                 ->placeholder('Pengeluaran Lainnya/Bulan')
@@ -266,6 +275,7 @@ class MemberCharacteristicResource extends Resource
                             Components\TextInput::make('total_expenses')
                                 ->numeric()
                                 ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
                                 ->prefix('Rp')
                                 ->label('Total Pengeluaran')
                                 ->placeholder('Total Pengeluaran/Bulan')
@@ -473,6 +483,94 @@ class MemberCharacteristicResource extends Resource
                                 ->numeric()
                                 ->readOnly()
                                 ->default(0),
+                        ]),
+
+                    Components\Wizard\Step::make('Karakteristik Rumah Tangga')
+                        ->schema([
+                            Components\TextInput::make('total_household_income')
+                                ->label('Total Pendapatan Keluarga')
+                                ->required()
+                                ->Prefix('Rp')
+                                ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
+                                ->placeholder('Total Pendapatan Keluarga'),
+                            Components\TextInput::make('total_household_members')
+                                ->label('Jumlah Anggota Keluarga')
+                                ->required()
+                                ->numeric()
+                                ->placeholder('Jumlah Anggota Keluarga'),
+                            Components\TextInput::make('income_per_capita')
+                                ->label('Pendapatan Per Kapita')
+                                ->required()
+                                ->Prefix('Rp')
+                                ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
+                                ->placeholder('Pendapatan Per Kapita'),
+                        ]),
+
+                    Components\Wizard\Step::make('Detail Pembiayaan')
+                        ->columns(2)
+                        ->schema([
+                            Components\Select::make('buyer')
+                                ->label('Digunakan Oleh?')
+                                ->required()
+                                ->placeholder('Pembiyaaan Digunakan Oleh?')
+                                ->native(false)
+                                ->columnSpanFull()
+                                ->options([
+                                    'SENDIRI' => 'SENDIRI',
+                                    'PASANGAN' => 'PASANGAN',
+                                ]),
+                            Components\TextInput::make('tenor')
+                                ->label('Tenor')
+                                ->required()
+                                ->numeric()
+                                ->columnSpanFull()
+                                ->datalist([
+                                    25, 50
+                                ])
+                                ->placeholder('Tenor'),
+                            Components\TextInput::make('pokok')
+                                ->label('Pokok')
+                                ->required()
+                                ->Prefix('Rp')
+                                ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
+                                ->live(debounce: 1000)
+                                ->afterStateUpdated(function (string|int|null $state = 0, Get $get, Set $set) {
+                                    $pokok = (int) str_replace(',', '', $state);
+                                    $tenor = (int) $get('tenor');
+
+                                    if ($pokok > 0) {
+                                        $margin = $pokok * 0.3;
+
+                                        $set('margin', $margin);
+
+                                        if ($tenor > 0) {
+                                            $installment = ($pokok + $margin) / $tenor;
+
+                                            $set('installment', $installment);
+                                        }
+                                    }
+                                })
+                                ->placeholder('Pokok'),
+                            Components\TextInput::make('margin')
+                                ->label('Margin (30%)')
+                                ->required()
+                                ->Prefix('Rp')
+                                ->readOnly()
+                                ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
+                                ->placeholder('Margin'),
+                            Components\TextInput::make('installment')
+                                ->label('Angsuran')
+                                ->required()
+                                ->Prefix('Rp')
+                                ->readOnly()
+                                ->columnSpanFull()
+                                ->mask(RawJs::make('$money($input)'))
+                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
+                                ->placeholder('Angsuran'),
                         ])
                 ])
                     ->skippable()
