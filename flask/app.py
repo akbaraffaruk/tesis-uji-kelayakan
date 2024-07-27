@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
 import traceback
+import os
 
 app = Flask(__name__)
 
@@ -9,7 +10,7 @@ app = Flask(__name__)
 model = None
 
 try:
-    model = joblib.load('./model/best_model.pkl')
+    model = joblib.load('./model/model.pkl')
     print("Model loaded successfully.")
 except Exception as e:
     print(f"Error loading model: {e}")
@@ -82,4 +83,6 @@ def predict():
         return jsonify({'error': str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Baca nilai APP_DEBUG dari file .env Laravel
+    debug_mode = os.getenv('APP_DEBUG', 'False').lower() in ['true', '1', 't']
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
