@@ -8,6 +8,7 @@ use App\Filament\Components\Forms\HouseIndexForm;
 use App\Filament\Components\Forms\IncomePerCapitaForm;
 use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -199,7 +200,46 @@ class MemberCharacteristicResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('identity_number')
+                    ->label('NIK')
+                    ->alignment(Alignment::Center)
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Lengkap')
+                    ->alignment(Alignment::Center)
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('address')
+                    ->label('Alamat')
+                    ->alignment(Alignment::Center)
+                    ->wrap()
+                    ->lineClamp(2),
+                Tables\Columns\TextColumn::make('total_expenses')
+                    ->label('Total Pengeluaran Bulanan')
+                    ->wrapHeader()
+                    ->prefix('Rp.')
+                    ->alignment(Alignment::Center)
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('income_per_capita')
+                    ->label('Pendapatan Perkapita')
+                    ->wrapHeader()
+                    ->prefix('Rp.')
+                    ->alignment(Alignment::Center)
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tenor')
+                    ->label('Tenor')
+                    ->alignment(Alignment::Center)
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('pokok')
+                    ->label('Pokok')
+                    ->alignment(Alignment::Center)
+                    ->prefix('Rp.')
+                    ->numeric()
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -211,7 +251,8 @@ class MemberCharacteristicResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

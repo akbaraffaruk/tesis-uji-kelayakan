@@ -115,7 +115,7 @@ class ExpenseForm
                 ->mask(RawJs::make('$money($input)'))
                 ->dehydrateStateUsing(fn(string|int $state) => (int)str_replace(',', '', $state))
                 ->prefix('Rp')
-                ->label('Total Pengeluaran')
+                ->label('Total Pengeluaran Bulanan')
                 ->placeholder('Total Pengeluaran/Bulan')
                 ->readOnly()
                 ->default(0)
