@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Components\Forms\ExpenseForm;
+use App\Filament\Components\Forms\FinancingDetailForm;
+use App\Filament\Components\Forms\HouseIndexForm;
+use App\Filament\Components\Forms\IncomePerCapitaForm;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
@@ -39,544 +43,155 @@ class MemberCharacteristicResource extends Resource
     {
         return $form
             ->schema([
-                Components\Wizard::make([
-                    Components\Wizard\Step::make('Data Pribadi')
-                        ->schema([
-                            Components\Fieldset::make('Identitas Diri')
-                                ->columns(2)
-                                ->schema([
-                                    Components\TextInput::make('name')
-                                        ->label('Nama Lengkap')
-                                        ->placeholder('Nama Lengkap')
-                                        ->required()
-                                        ->autofocus(),
-                                    Components\TextInput::make('identity_number')
-                                        ->label('NIK')
-                                        ->placeholder('Nomor Induk Kependudukan. 16 Digit')
-                                        ->required()
-                                        ->mask('9999999999999999'),
-                                    Components\TextInput::make('place_of_birth')
-                                        ->label('Tempat Lahir')
-                                        ->placeholder('Tempat Lahir')
-                                        ->required(),
-                                    Components\DatePicker::make('date_of_birth')
-                                        ->label('Tanggal Lahir')
-                                        ->placeholder('Tanggal Lahir')
-                                        ->required()
-                                        ->live()
-                                        ->suffix(function (?string $state = null) {
-                                            // Show age
-                                            if ($state) {
-                                                $birthdate = Carbon::parse($state);
-                                                $age = $birthdate->age;
-                                                return "Umur: {$age} Tahun";
-                                            }
+                Components\Tabs::make('karakteristik-anggota')
+                    ->tabs([
+                        Components\Tabs\Tab::make('Data Pribadi')
+                            ->schema([
+                                Components\Fieldset::make('Identitas Diri')
+                                    ->columns(2)
+                                    ->schema([
+                                        Components\TextInput::make('name')
+                                            ->label('Nama Lengkap')
+                                            ->placeholder('Nama Lengkap')
+                                            ->required()
+                                            ->autofocus(),
+                                        Components\TextInput::make('identity_number')
+                                            ->label('NIK')
+                                            ->placeholder('Nomor Induk Kependudukan. 16 Digit')
+                                            ->required()
+                                            ->mask('9999999999999999'),
+                                        Components\TextInput::make('place_of_birth')
+                                            ->label('Tempat Lahir')
+                                            ->autocapitalize()
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(fn(Set $set, ?string $state) => $set('place_of_birth', strtoupper($state)))
+                                            ->placeholder('Tempat Lahir')
+                                            ->required(),
+                                        Components\DatePicker::make('date_of_birth')
+                                            ->label('Tanggal Lahir')
+                                            ->placeholder('Tanggal Lahir')
+                                            ->required()
+                                            ->live()
+                                            ->suffix(function (?string $state = null) {
+                                                // Show age
+                                                if ($state) {
+                                                    $birthdate = Carbon::parse($state);
+                                                    $age = $birthdate->age;
+                                                    return "Umur: {$age} Tahun";
+                                                }
 
-                                            return '';
-                                        }),
+                                                return '';
+                                            }),
 
-                                    Components\Grid::make(3)
-                                        ->schema([
-                                            Components\Textarea::make('address')
-                                                ->label('Alamat')
-                                                ->required()
-                                                ->placeholder('Alamat Lengkap')
-                                                ->rows(3)
-                                                ->columnSpan(2),
-                                            Components\Radio::make('gender')
-                                                ->label('Jenis Kelamin')
-                                                ->required()
-                                                ->options([
-                                                    'L' => 'Laki-Laki',
-                                                    'P' => 'Perempuan',
-                                                ]),
-                                        ])
-                                ]),
-                            Components\Fieldset::make('Pekerjaan')
-                                ->columns(2)
-                                ->schema([
-                                    Components\Select::make('source_of_income')
-                                        ->label('Sumber Penghasilan')
-                                        ->searchable()
-                                        ->native(false)
-                                        ->required()
-                                        ->placeholder('Sumber Penghasilan')
-                                        ->columnSpanFull()
-                                        ->options([
-                                            'SUAMI' => 'SUAMI',
-                                            'GAJI' => 'GAJI',
-                                            'PENSIUNAN' => 'PENSIUNAN',
-                                            'ANAK' => 'ANAK',
-                                            'USAHA' => 'USAHA',
-                                        ]),
-                                    Components\Select::make('work')
-                                        ->label('Pekerjaan')
-                                        ->options([
-                                            'PEDAGANG' => 'PEDAGANG',
-                                            'PEGAWAI NEGERI' => 'PEGAWAI NEGERI',
-                                            'IBU RUMAH TANGGA' => 'IBU RUMAH TANGGA',
-                                            'BURUH' => 'BURUH',
-                                            'KARYAWAN' => 'KARYAWAN',
-                                            'PETANI' => 'PETANI',
-                                            'SUPIR' => 'SUPIR',
-                                            'WIRASWASTA' => 'WIRASWASTA',
-                                            'PENSIUNAN' => 'PENSIUNAN',
-                                            'JASA' => 'JASA',
-                                            'HOME INDUSTRI' => 'HOME INDUSTRI',
-                                            'PELAJAR' => 'PELAJAR',
-                                            'LAINNYA' => 'LAINNYA',
-                                        ])
-                                        ->searchable()
-                                        ->native(false)
-                                        ->required()
-                                        ->placeholder('Pekerjaan'),
-                                    Components\TextInput::make('work_description')
-                                        ->label('Deskripsi Pekerjaan')
-                                        ->required()
-                                        ->placeholder('Eg. DAGANG IKAN BAKAR'),
-                                ]),
-                            Components\Fieldset::make('Orang Tua')
-                                ->columns(2)
-                                ->schema([
-                                    Components\TextInput::make('mother_name')
-                                        ->label('Nama Ibu Kandung')
-                                        ->required()
-                                        ->placeholder('Nama Ibu Kandung'),
-                                    Components\TextInput::make('father_name')
-                                        ->label('Nama Ayah Kandung')
-                                        ->required()
-                                        ->placeholder('Nama Ayah Kandung'),
-                                ]),
-                        ]),
+                                        Components\Grid::make(3)
+                                            ->schema([
+                                                Components\Textarea::make('address')
+                                                    ->label('Alamat')
+                                                    ->required()
+                                                    ->placeholder('Alamat Lengkap')
+                                                    ->rows(3)
+                                                    ->columnSpan(2),
+                                                Components\Radio::make('gender')
+                                                    ->label('Jenis Kelamin')
+                                                    ->required()
+                                                    ->options([
+                                                        'L' => 'Laki-Laki',
+                                                        'P' => 'Perempuan',
+                                                    ]),
+                                            ])
+                                    ]),
+                                Components\Fieldset::make('Pekerjaan')
+                                    ->columns(2)
+                                    ->schema([
+                                        Components\Select::make('source_of_income')
+                                            ->label('Sumber Penghasilan')
+                                            ->searchable()
+                                            ->native(false)
+                                            ->required()
+                                            ->placeholder('Sumber Penghasilan')
+                                            ->columnSpanFull()
+                                            ->options([
+                                                'SUAMI' => 'SUAMI',
+                                                'GAJI' => 'GAJI',
+                                                'PENSIUNAN' => 'PENSIUNAN',
+                                                'ANAK' => 'ANAK',
+                                                'USAHA' => 'USAHA',
+                                            ]),
+                                        Components\Select::make('work')
+                                            ->label('Pekerjaan')
+                                            ->options([
+                                                'PEDAGANG' => 'PEDAGANG',
+                                                'PEGAWAI NEGERI' => 'PEGAWAI NEGERI',
+                                                'IBU RUMAH TANGGA' => 'IBU RUMAH TANGGA',
+                                                'BURUH' => 'BURUH',
+                                                'KARYAWAN' => 'KARYAWAN',
+                                                'PETANI' => 'PETANI',
+                                                'SUPIR' => 'SUPIR',
+                                                'WIRASWASTA' => 'WIRASWASTA',
+                                                'PENSIUNAN' => 'PENSIUNAN',
+                                                'JASA' => 'JASA',
+                                                'HOME INDUSTRI' => 'HOME INDUSTRI',
+                                                'PELAJAR' => 'PELAJAR',
+                                                'LAINNYA' => 'LAINNYA',
+                                            ])
+                                            ->searchable()
+                                            ->native(false)
+                                            ->required()
+                                            ->placeholder('Pekerjaan'),
+                                        Components\TextInput::make('work_description')
+                                            ->label('Deskripsi Pekerjaan')
+                                            ->required()
+                                            ->placeholder('Eg. DAGANG IKAN BAKAR'),
+                                    ]),
+                                Components\Fieldset::make('Orang Tua')
+                                    ->columns(2)
+                                    ->schema([
+                                        Components\TextInput::make('mother_name')
+                                            ->label('Nama Ibu Kandung')
+                                            ->required()
+                                            ->placeholder('Nama Ibu Kandung'),
+                                    ]),
+                            ]),
 
-                    Components\Wizard\Step::make('Simpanan')
-                        ->schema([
-                            Components\TextInput::make('savings')
-                                ->label('Tabungan')
-                                ->required()
-                                ->Prefix('Rp')
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->placeholder('Tabungan')
-                                ->default(0),
-                        ]),
+                        Components\Tabs\Tab::make('Simpanan')
+                            ->schema([
+                                Components\TextInput::make('savings')
+                                    ->label('Tabungan')
+                                    ->required()
+                                    ->Prefix('Rp')
+                                    ->mask(RawJs::make('$money($input)'))
+                                    ->dehydrateStateUsing(fn(string|int $state) => (int)str_replace(',', '', $state))
+                                    ->placeholder('Tabungan')
+                                    ->default(0),
+                            ]),
 
-                    Components\Wizard\Step::make('Pengeluaran Rumah Tangga (Perbulan)')
-                        ->schema([
-                            Components\Grid::make(3)
-                                ->schema([
-                                    Components\TextInput::make('rice_consumption')
-                                        ->numeric()
-                                        ->suffix('Liter')
-                                        ->label('Konsumsi Beras')
-                                        ->placeholder('Konsumsi Beras per Bulan')
-                                        ->required(),
-                                    Components\TextInput::make('rice_price')
-                                        ->numeric()
-                                        ->mask(RawJs::make('$money($input)'))
-                                        ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                        ->prefix('Rp')
-                                        ->label('Harga Beras')
-                                        ->placeholder('Harga Beras per Bulan')
-                                        ->live(debounce: 1000)
-                                        ->columnSpan(2)
-                                        ->suffix(function (string|int|null $state = 0, Get $get, Set $set): string {
-                                            $totalRicePrice = 0;
-                                            $ricePrice = (int) str_replace(',', '', $state) ?? 0;
-                                            $riceConsumption = (int) $get('rice_consumption') ?? 0;
+                        Components\Tabs\Tab::make('Pengeluaran Rumah Tangga (Perbulan)')
+                            ->schema([
+                                ...ExpenseForm::renderForm(),
+                            ])
+                            ->columns(2),
 
-                                            if (is_numeric($riceConsumption) && is_numeric($ricePrice))
-                                                $totalRicePrice = $ricePrice * $riceConsumption;
+                        Components\Tabs\Tab::make('Indeks Rumah')
+                            ->columns(2)
+                            ->schema([
+                                ...HouseIndexForm::renderForm(),
+                            ]),
 
-                                            $set('total_rice_price', $totalRicePrice);
+                        Components\Tabs\Tab::make('Pendapatan Perkapita')
+                            ->columns(2)
+                            ->schema([
+                                ...IncomePerCapitaForm::renderForm(),
+                            ]),
 
-                                            // set total_expenses
-                                            $totalExpenses = (int) str_replace(',', '', $get('total_expenses')) ?? 0;
-                                            $totalExpenses += $totalRicePrice;
-
-                                            $set('total_expenses', $totalExpenses);
-
-                                            return "Total: Rp" . number_format($totalRicePrice, 0, ',', '.');
-                                        }, true)
-                                        ->required(),
-                                    Components\Hidden::make('total_rice_price')
-                                        ->dehydrated(false),
-                                ]),
-
-                            Components\TextInput::make('kitchen_shop')
-                                ->numeric()
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->prefix('Rp')
-                                ->label('Belanja Dapur')
-                                ->placeholder('Pengeluaran Belanja Dapur/Bulan')
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|int|null $state = 0, Get $get, Set $set) {
-                                    $kitchenShop = (int) str_replace(',', '', $state);
-                                    $totalExpenses = (int) str_replace(',', '', $get('total_expenses')) ?? 0;
-
-                                    $totalExpenses += $kitchenShop;
-
-                                    $set('total_expenses', $totalExpenses);
-                                })
-                                ->required(),
-                            Components\TextInput::make('electricity_bills')
-                                ->numeric()
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->prefix('Rp')
-                                ->label('Rekening Listrik')
-                                ->placeholder('Pengeluaran Listrik/Bulan')
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|int|null $state = 0, Get $get, Set $set) {
-                                    $electricityBills = (int) str_replace(',', '', $state);
-                                    $totalExpenses = (int) str_replace(',', '', $get('total_expenses')) ?? 0;
-
-                                    $totalExpenses += $electricityBills;
-
-                                    $set('total_expenses', $totalExpenses);
-                                })
-                                ->required(),
-                            Components\TextInput::make('education')
-                                ->numeric()
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->prefix('Rp')
-                                ->label('Pendidikan')
-                                ->placeholder('Pengeluaran Dana Pendidikan/Bulan')
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|int|null $state = 0, Get $get, Set $set) {
-                                    $education = (int) str_replace(',', '', $state);
-                                    $totalExpenses = (int) str_replace(',', '', $get('total_expenses')) ?? 0;
-
-                                    $totalExpenses += $education;
-
-                                    $set('total_expenses', $totalExpenses);
-                                })
-                                ->required(),
-                            Components\TextInput::make('other_costs')
-                                ->numeric()
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->prefix('Rp')
-                                ->label('Lainnya')
-                                ->placeholder('Pengeluaran Lainnya/Bulan')
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|int|null $state = 0, Get $get, Set $set) {
-                                    $otherCosts = (int) str_replace(',', '', $state);
-                                    $totalExpenses = (int) str_replace(',', '', $get('total_expenses')) ?? 0;
-
-                                    $totalExpenses += $otherCosts;
-
-                                    $set('total_expenses', $totalExpenses);
-                                })
-                                ->required(),
-
-                            Components\TextInput::make('total_expenses')
-                                ->numeric()
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->prefix('Rp')
-                                ->label('Total Pengeluaran')
-                                ->placeholder('Total Pengeluaran/Bulan')
-                                ->readOnly()
-                                ->default(0)
-                                ->live(debounce: 1000)
-                                ->columnSpanFull(),
-                        ])
-                        ->columns(2),
-
-                    Components\Wizard\Step::make('Indeks Rumah')
-                        ->columns(2)
-                        ->schema([
-                            Components\Select::make('house_status')
-                                ->label('Status Rumah')
-                                ->placeholder('Status Rumah')
-                                ->required()
-                                ->native(false)
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|null $state, Get $get, Set $set) {
-                                    $totalHouseIndex = (int)$get('total_house_index') ?? 0;
-                                    $houseStatus = $state ?? 0;
-
-                                    if ($houseStatus === 'MILIK SENDIRI')
-                                        $totalHouseIndex += 4;
-                                    elseif ($houseStatus === 'SEWA')
-                                        $totalHouseIndex += 2;
-
-                                    $set('total_house_index', $totalHouseIndex);
-                                })
-                                ->options([
-                                    'MILIK SENDIRI' => 'MILIK SENDIRI (4)',
-                                    'SEWA' => 'SEWA (2)',
-                                    'NUMPANG' => 'NUMPANG (0)',
-                                ]),
-                            Components\TextInput::make('yard_area')
-                                ->label('Luas Pekarangan')
-                                ->suffix('m²', true)
-                                ->placeholder('Luas Pekarangan')
-                                ->numeric()
-                                ->required(),
-                            Components\Select::make('house_area')
-                                ->label('Luas Rumah')
-                                ->placeholder('Luas Rumah')
-                                ->required()
-                                ->native(false)
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|int|null $state = 0, Get $get, Set $set) {
-                                    $totalHouseIndex = (int)$get('total_house_index') ?? 0;
-                                    $houseArea = (int) $state ?? 0;
-
-                                    if ($houseArea === 70)
-                                        $totalHouseIndex += 4;
-                                    elseif ($houseArea === 50)
-                                        $totalHouseIndex += 2;
-
-                                    $set('total_house_index', $totalHouseIndex);
-                                })
-                                ->options([
-                                    70 => 'BESAR > 70 M² (4)',
-                                    50 => 'SEDANG 30 - 69 M² (2)',
-                                    30 => 'KECIL < 30 M² (0)',
-                                ]),
-                            Components\Select::make('roof_type')
-                                ->label('Jenis Atap')
-                                ->placeholder('Jenis Atap')
-                                ->required()
-                                ->native(false)
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|null $state, Get $get, Set $set) {
-                                    $totalHouseIndex = (int)$get('total_house_index') ?? 0;
-                                    $roofType = $state ?? 0;
-
-                                    if ($roofType === 'GENTENG')
-                                        $totalHouseIndex += 4;
-                                    elseif ($roofType === 'SENG')
-                                        $totalHouseIndex += 1;
-
-                                    $set('total_house_index', $totalHouseIndex);
-                                })
-                                ->options([
-                                    'GENTENG' => 'GENTENG (4)',
-                                    'SENG' => 'SENG (1)',
-                                    'RUMBIA' => 'RUMBIA (0)',
-                                ]),
-                            Components\Select::make('house_wall')
-                                ->label('Dinding Rumah')
-                                ->placeholder('Dinding Rumah')
-                                ->required()
-                                ->native(false)
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|null $state, Get $get, Set $set) {
-                                    $totalHouseIndex = (int)$get('total_house_index') ?? 0;
-                                    $houseWall = $state ?? 0;
-
-                                    if ($houseWall === 'TEMBOK')
-                                        $totalHouseIndex += 4;
-                                    elseif ($houseWall === 'SEMI TEMBOK')
-                                        $totalHouseIndex += 2;
-                                    elseif ($houseWall === 'KAYU/PAPAN')
-                                        $totalHouseIndex += 1;
-
-                                    $set('total_house_index', $totalHouseIndex);
-                                })
-                                ->options([
-                                    'TEMBOK' => 'TEMBOK (4)',
-                                    'SEMI TEMBOK' => 'SEMI TEMBOK (2)',
-                                    'KAYU/PAPAN' => 'KAYU/PAPAN (1)',
-                                    'BAMBU' => 'BAMBU (0)',
-                                ]),
-                            Components\Select::make('house_floor')
-                                ->label('Lantai Rumah')
-                                ->placeholder('Lantai Rumah')
-                                ->required()
-                                ->native(false)
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|null $state, Get $get, Set $set) {
-                                    $totalHouseIndex = (int)$get('total_house_index') ?? 0;
-                                    $houseFloor = $state ?? 0;
-
-                                    if ($houseFloor === 'TEGEL')
-                                        $totalHouseIndex += 4;
-                                    elseif ($houseFloor === 'PLESTER SEMEN/CAMPURAN TRASO, KERAMIK, DLL')
-                                        $totalHouseIndex += 2;
-                                    elseif ($houseFloor === 'PAPAN/KAYU/BAMBU')
-                                        $totalHouseIndex += 1;
-
-                                    $set('total_house_index', $totalHouseIndex);
-                                })
-                                ->options([
-                                    'TEGEL' => 'TEGEL (4)',
-                                    'PLESTER SEMEN/CAMPURAN TRASO, KERAMIK, DLL' => 'PLESTER SEMEN/CAMPURAN TRASO, KERAMIK, DLL (2)',
-                                    'PAPAN/KAYU/BAMBU' => 'PAPAN/KAYU/BAMBU (1)',
-                                    'TANAH' => 'TANAH (0)',
-                                ]),
-                            Components\Select::make('type_of_lighting')
-                                ->label('Jenis Penerangan')
-                                ->placeholder('Jenis Penerangan')
-                                ->required()
-                                ->native(false)
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|null $state, Get $get, Set $set) {
-                                    $totalHouseIndex = (int)$get('total_house_index') ?? 0;
-                                    $typeOfLighting = $state ?? 0;
-
-                                    if ($typeOfLighting === 'LISTRIK')
-                                        $totalHouseIndex += 4;
-                                    elseif ($typeOfLighting === 'PATROMAK')
-                                        $totalHouseIndex += 2;
-
-                                    $set('total_house_index', $totalHouseIndex);
-                                })
-                                ->options([
-                                    'LISTRIK' => 'LISTRIK (4)',
-                                    'PATROMAK' => 'SEMI TEMBOK (2)',
-                                    'LAMPU MINYAK' => 'LAMPU MINYAK (0)',
-                                ]),
-                            Components\Select::make('latrine_type')
-                                ->label('Jenis Jamban')
-                                ->placeholder('Jenis Jamban')
-                                ->required()
-                                ->native(false)
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|null $state, Get $get, Set $set) {
-                                    $totalHouseIndex = (int)$get('total_house_index') ?? 0;
-                                    $latrineType = $state ?? 0;
-
-                                    if ($latrineType === 'WC')
-                                        $totalHouseIndex += 4;
-                                    elseif ($latrineType === 'JAMBAN TERBUKA')
-                                        $totalHouseIndex += 2;
-
-                                    $set('total_house_index', $totalHouseIndex);
-                                })
-                                ->options([
-                                    'WC' => 'WC (4)',
-                                    'JAMBAN TERBUKA' => 'JAMBAN TERBUKA (2)',
-                                    'DI SUNGAI' => 'DI SUNGAI (0)',
-                                ]),
-                            Components\Select::make('source_of_drinking_water')
-                                ->label('Sumber Air Minum')
-                                ->placeholder('Sumber Air Minum')
-                                ->required()
-                                ->native(false)
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|null $state, Get $get, Set $set) {
-                                    $totalHouseIndex = (int)$get('total_house_index') ?? 0;
-                                    $sourceOfDrinkingWater = $state ?? 0;
-
-                                    if ($sourceOfDrinkingWater === 'SUMUR SENDIRI')
-                                        $totalHouseIndex += 4;
-                                    elseif ($sourceOfDrinkingWater === 'SUMUR BERSAMA')
-                                        $totalHouseIndex += 2;
-
-                                    $set('total_house_index', $totalHouseIndex);
-                                })
-                                ->options([
-                                    'SUMUR SENDIRI' => 'SUMUR SENDIRI (4)',
-                                    'SUMUR BERSAMA' => 'SUMUR BERSAMA (2)',
-                                    'DI SUNGAI/MATA AIR' => 'DI SUNGAI/MATA AIR (0)',
-                                ]),
-
-                            Components\TextInput::make('total_house_index')
-                                ->label('Total Indeks Rumah')
-                                ->numeric()
-                                ->readOnly()
-                                ->default(0),
-                        ]),
-
-                    Components\Wizard\Step::make('Karakteristik Rumah Tangga')
-                        ->schema([
-                            Components\TextInput::make('total_household_income')
-                                ->label('Total Pendapatan Keluarga')
-                                ->required()
-                                ->Prefix('Rp')
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->placeholder('Total Pendapatan Keluarga'),
-                            Components\TextInput::make('total_household_members')
-                                ->label('Jumlah Anggota Keluarga')
-                                ->required()
-                                ->numeric()
-                                ->placeholder('Jumlah Anggota Keluarga'),
-                            Components\TextInput::make('income_per_capita')
-                                ->label('Pendapatan Per Kapita')
-                                ->required()
-                                ->Prefix('Rp')
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->placeholder('Pendapatan Per Kapita'),
-                        ]),
-
-                    Components\Wizard\Step::make('Detail Pembiayaan')
-                        ->columns(2)
-                        ->schema([
-                            Components\Select::make('buyer')
-                                ->label('Digunakan Oleh?')
-                                ->required()
-                                ->placeholder('Pembiyaaan Digunakan Oleh?')
-                                ->native(false)
-                                ->columnSpanFull()
-                                ->options([
-                                    'SENDIRI' => 'SENDIRI',
-                                    'PASANGAN' => 'PASANGAN',
-                                ]),
-                            Components\TextInput::make('tenor')
-                                ->label('Tenor')
-                                ->required()
-                                ->numeric()
-                                ->columnSpanFull()
-                                ->datalist([
-                                    25, 50
-                                ])
-                                ->placeholder('Tenor'),
-                            Components\TextInput::make('pokok')
-                                ->label('Pokok')
-                                ->required()
-                                ->Prefix('Rp')
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->live(debounce: 1000)
-                                ->afterStateUpdated(function (string|int|null $state = 0, Get $get, Set $set) {
-                                    $pokok = (int) str_replace(',', '', $state);
-                                    $tenor = (int) $get('tenor');
-
-                                    if ($pokok > 0) {
-                                        $margin = $pokok * 0.3;
-
-                                        $set('margin', $margin);
-
-                                        if ($tenor > 0) {
-                                            $installment = ($pokok + $margin) / $tenor;
-
-                                            $set('installment', $installment);
-                                        }
-                                    }
-                                })
-                                ->placeholder('Pokok'),
-                            Components\TextInput::make('margin')
-                                ->label('Margin (30%)')
-                                ->required()
-                                ->Prefix('Rp')
-                                ->readOnly()
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->placeholder('Margin'),
-                            Components\TextInput::make('installment')
-                                ->label('Angsuran')
-                                ->required()
-                                ->Prefix('Rp')
-                                ->readOnly()
-                                ->columnSpanFull()
-                                ->mask(RawJs::make('$money($input)'))
-                                ->dehydrateStateUsing(fn (string|int $state) => (int) str_replace(',', '', $state))
-                                ->placeholder('Angsuran'),
-                        ])
-                ])
-                    ->skippable()
+                        Components\Tabs\Tab::make('Detail Pembiayaan')
+                            ->columns(2)
+                            ->schema([
+                                ...FinancingDetailForm::renderForm(),
+                            ])
+                    ])
                     ->columnSpanFull()
                     ->id('karakteristik-anggota')
-                    ->persistStepInQueryString()
+                    ->persistTab()
             ]);
     }
 

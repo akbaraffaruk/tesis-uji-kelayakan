@@ -27,10 +27,9 @@ return new class extends Migration
             $table->string('source_of_income')->nullable();
 
             $table->string('mother_name')->nullable();
-            $table->string('father_name')->nullable();
-            
+
             $table->integer('savings')->nullable();
-            
+
             $table->integer('rice_consumption')->nullable();
             $table->integer('rice_price')->nullable();
             $table->integer('kitchen_shop')->nullable();
@@ -53,7 +52,7 @@ return new class extends Migration
             $table->integer('total_household_income')->nullable();
             $table->integer('total_household_members')->nullable();
             $table->integer('income_per_capita')->nullable();
-            
+
             $table->integer('tenor')->nullable();
             $table->integer('pokok')->nullable();
             $table->integer('margin')->nullable();

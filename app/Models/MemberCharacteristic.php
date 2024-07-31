@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin IdeHelperMemberCharacteristic
+ */
 #[ObservedBy([MemberCharacteristicObserver::class])]
 class MemberCharacteristic extends Model
 {
@@ -27,7 +30,6 @@ class MemberCharacteristic extends Model
         'source_of_income',
 
         'mother_name',
-        'father_name',
 
         'savings',
 
