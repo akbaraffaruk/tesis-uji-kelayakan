@@ -6,6 +6,7 @@ use App\Filament\Resources\MemberCharacteristicResource;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Http;
 
 class EditMemberCharacteristic extends EditRecord
 {
@@ -13,6 +14,8 @@ class EditMemberCharacteristic extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        $flaskUrl = config('services.flask.url');
+
         $birthdate = Carbon::parse($data['date_of_birth']);
         $age = $birthdate->age;
 
@@ -41,14 +44,21 @@ class EditMemberCharacteristic extends EditRecord
             'tenor' => $data['tenor'],
             'pokok' => $data['pokok'],
             'margin' => $data['margin'],
-            'status_pernikahan' => $data['marital_status'],
-            'form' => $data['work'],
-            'installment' => $data['installment'],
-            'age' => $age,
+            'angsuran' => $data['installment'],
+            'umur' => $age,
             'total_pengeluaran' => $data['total_expenses'],
             'buyer_suami' => $data['gender'] === 'L' && $data['buyer'] === 'SENDIRI' ? 1 : 0,
             'buyer_istri' => $data['gender'] === 'P' && $data['buyer'] === 'SENDIRI' ? 1 : 0,
         ];
+
+        $response = Http::post("$flaskUrl/predict", $reqBody);
+
+        if ($response->ok()) {
+            $resJson = $response->json();
+            $data['kol_prediction'] = $resJson['prediction'];
+        } else {
+            throw new \Exception('Failed to get prediction');
+        }
 
         return $data;
     }

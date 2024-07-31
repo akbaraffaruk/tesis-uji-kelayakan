@@ -16,9 +16,9 @@ except Exception as e:
     print(f"Error loading model: {e}")
     print(traceback.format_exc())
 
-@app.route('/hello', methods=['GET'])
+@app.route('/health', methods=['GET'])
 def hello():
-    return jsonify({'message': 'Hello, World!'})
+    return jsonify({'status': 'OK'})
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -31,14 +31,14 @@ def predict():
 
         # Ensure correct data types for numerical columns
         numerical_features = [
-            "konsumsi_beras", "harga", "belanja_dapur", "rekening_listrik", "pendidikan", "lainnya", "simpanan_tabungan",
+            "konsumsi_beras", "harga_beras", "belanja_dapur", "rekening_listrik", "pendidikan", "lainnya", "simpanan_tabungan",
             "luas_pekarangan", "total_nilai_indeks_rumah", "total_pendapatan_rumah_tangga", "jumlah_anggota_rumah_tangga",
-            "pendapatan_perkapita", "tenor", "pokok", "margin", "installment", "age", "total_pengeluaran", "buyer_suami", "buyer_istri"
+            "pendapatan_perkapita", "tenor", "pokok", "margin", "angsuran", "umur", "total_pengeluaran", "buyer_suami", "buyer_istri"
         ]
 
         categorical_features = [
             "pekerjaan", "sumber_pendapatan", "status_rumah", "luas_rumah", "jenis_atap", "dinding_rumah", "jenis_penerangan",
-            "jenis_jamban", "sumber_air_minum", "status_pernikahan", "form"
+            "jenis_jamban", "sumber_air_minum"
         ]
 
         features = numerical_features + categorical_features
@@ -60,22 +60,25 @@ def predict():
 
         # Convert categorical features to string if not already
         for feature in categorical_features:
-            input_data[feature] = input_data[feature].astype(str)
+            input_data[feature] = input_data[feature].astype(str).str.upper()
 
         # Make prediction
         prediction = model.predict(input_data)
 
         # Mapping prediction to label
         prediction_mapping = {
-            0: "KOL 0 (LANCAR)",
-            1: "KOL 1 (1-30 HARI)",
-            2: "KOL 2 (31-60 HARI)",
-            3: "KOL 3 (61-90 HARI)",
-            4: "KOL 4 (91-120 HARI)",
-            5: "KOL 5 (LEBIH DARI 120 HARI)"
+            0: "LANCAR",
+            1: "1-30 HARI",
+            2: "31-60 HARI",
+            3: "61-90 HARI",
+            4: "91-120 HARI",
+            5: "LEBIH DARI 120 HARI"
         }
 
-        result = {'prediction': prediction_mapping.get(int(prediction[0]), "Unknown Prediction")}
+        result = {
+            'prediction': int(prediction[0]),
+            'description': prediction_mapping.get(int(prediction[0]), "Unknown Prediction")
+        }
         return jsonify(result)
     except Exception as e:
         print(f"Error during prediction: {e}")

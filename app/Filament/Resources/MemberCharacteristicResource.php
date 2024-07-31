@@ -257,6 +257,17 @@ class MemberCharacteristicResource extends Resource
                     ->prefix('Rp.')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('kol_prediction')
+                    ->label('Prediksi')
+                    ->alignment(Alignment::Center)
+                    ->prefix('Kol ')
+                    ->badge()
+                    ->color(fn(int $state): string => match ($state) {
+                        0, 1 => 'success',
+                        2, 3 => 'warning',
+                        4, 5 => 'danger',
+                        default => 'gray',
+                    })
             ])
             ->filters([
                 //
