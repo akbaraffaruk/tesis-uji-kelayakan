@@ -31,6 +31,8 @@ class MemberCharacteristic extends Model
 
         'mother_name',
 
+        'marital_status',
+
         'savings',
 
         'rice_consumption',
@@ -60,6 +62,8 @@ class MemberCharacteristic extends Model
         'margin',
         'installment',
         'buyer',
+
+        'kol_prediction',
     ];
 
     protected $casts = [

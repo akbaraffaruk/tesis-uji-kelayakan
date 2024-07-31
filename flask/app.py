@@ -38,7 +38,7 @@ def predict():
 
         categorical_features = [
             "pekerjaan", "sumber_pendapatan", "status_rumah", "luas_rumah", "jenis_atap", "dinding_rumah", "jenis_penerangan",
-            "jenis_jamban", "sumber_air_minum", "martial_status", "form"
+            "jenis_jamban", "sumber_air_minum", "status_pernikahan", "form"
         ]
 
         features = numerical_features + categorical_features
@@ -53,7 +53,7 @@ def predict():
 
         for feature in numerical_features:
             input_data[feature] = pd.to_numeric(input_data[feature], errors='coerce')
-        
+
         # Check for any NaN values after conversion
         if input_data[numerical_features].isnull().any().any():
             return jsonify({'error': 'One or more numerical fields contain invalid data.'}), 400

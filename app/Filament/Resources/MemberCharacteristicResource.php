@@ -50,6 +50,7 @@ class MemberCharacteristicResource extends Resource
                             ->schema([
                                 Components\Fieldset::make('Identitas Diri')
                                     ->columns(2)
+                                    ->columnSpanFull()
                                     ->schema([
                                         Components\TextInput::make('name')
                                             ->label('Nama Lengkap')
@@ -103,6 +104,7 @@ class MemberCharacteristicResource extends Resource
                                     ]),
                                 Components\Fieldset::make('Pekerjaan')
                                     ->columns(2)
+                                    ->columnSpanFull()
                                     ->schema([
                                         Components\Select::make('source_of_income')
                                             ->label('Sumber Penghasilan')
@@ -144,14 +146,29 @@ class MemberCharacteristicResource extends Resource
                                             ->required()
                                             ->placeholder('Eg. DAGANG IKAN BAKAR'),
                                     ]),
-                                Components\Fieldset::make('Orang Tua')
-                                    ->columns(2)
-                                    ->schema([
-                                        Components\TextInput::make('mother_name')
-                                            ->label('Nama Ibu Kandung')
-                                            ->required()
-                                            ->placeholder('Nama Ibu Kandung'),
-                                    ]),
+                                Components\Split::make([
+                                    Components\Fieldset::make('Orang Tua')
+                                        ->schema([
+                                            Components\TextInput::make('mother_name')
+                                                ->label('Nama Ibu Kandung')
+                                                ->columnSpanFull()
+                                                ->required()
+                                                ->placeholder('Nama Ibu Kandung'),
+                                        ]),
+                                    Components\Fieldset::make('Status')
+                                        ->schema([
+                                            Components\Select::make('marital_status')
+                                                ->label('Status Menikah')
+                                                ->columnSpanFull()
+                                                ->native(false)
+                                                ->options([
+                                                    'MENIKAH' => 'MENIKAH',
+                                                    'CERAI' => 'CERAI',
+                                                ])
+                                                ->required()
+                                                ->placeholder('Status Pernikahan'),
+                                        ]),
+                                ])
                             ]),
 
                         Components\Tabs\Tab::make('Simpanan')
@@ -248,9 +265,9 @@ class MemberCharacteristicResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+//                Tables\Actions\BulkActionGroup::make([
+//                    Tables\Actions\DeleteBulkAction::make(),
+//                ]),
             ])
             ->defaultSort('created_at', 'desc');
     }
