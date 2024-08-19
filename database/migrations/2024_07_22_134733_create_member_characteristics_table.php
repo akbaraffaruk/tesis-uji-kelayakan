@@ -40,7 +40,7 @@ return new class extends Migration
 
             $table->string('house_status')->nullable();
             $table->integer('yard_area')->nullable();
-            $table->integer('house_area')->nullable();
+            $table->string('house_area')->nullable();
             $table->string('roof_type')->nullable();
             $table->string('house_wall')->nullable();
             $table->string('house_floor')->nullable();

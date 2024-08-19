@@ -10,7 +10,6 @@ use Filament\Support\RawJs;
 class ExpenseForm
 {
     private static array $fields = [
-        'rice_price',
         'kitchen_shop',
         'electricity_bills',
         'education',
@@ -20,6 +19,11 @@ class ExpenseForm
     private static function setCalculateTotalExpenses(Get $get, Set $set): void
     {
         $total = 0;
+
+        $ricePrice = (int)str_replace(',', '', $get('total_rice_price') ?? 0);
+
+        if (is_numeric($ricePrice))
+            $total += $ricePrice;
 
         foreach (self::$fields as $field) {
             $total += (int)str_replace(',', '', $get($field) ?? 0);

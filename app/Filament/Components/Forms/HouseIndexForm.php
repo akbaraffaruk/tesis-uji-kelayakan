@@ -16,9 +16,9 @@ class HouseIndexForm
             'NUMPANG' => 0,
         ],
         'house_area' => [
-            70 => 4,
-            50 => 2,
-            30 => 0,
+            'BESAR' => 4,
+            'SEDANG' => 2,
+            'KECIL' => 0,
         ],
         'roof_type' => [
             'GENTENG' => 4,
@@ -33,7 +33,7 @@ class HouseIndexForm
         ],
         'house_floor' => [
             'TEGEL' => 4,
-            'PLESTER SEMEN/CAMPURAN TRASO, KERAMIK, DLL' => 2,
+            'PLESTER SEMEN/CAMPURAN TRASO, KERAMIK,DLL' => 3,
             'PAPAN/KAYU/BAMBU' => 1,
             'TANAH' => 0,
         ],
@@ -104,9 +104,9 @@ class HouseIndexForm
                     $set('total_house_index', self::calculateTotalIndex($get));
                 })
                 ->options([
-                    70 => 'BESAR > 70 M² (4)',
-                    50 => 'SEDANG 30 - 69 M² (2)',
-                    30 => 'KECIL < 30 M² (0)',
+                    'BESAR' => 'BESAR > 70 M² (4)',
+                    'SEDANG' => 'SEDANG 30 - 69 M² (2)',
+                    'KECIL' => 'KECIL < 30 M² (0)',
                 ]),
 
             Components\Select::make('roof_type')
@@ -151,7 +151,7 @@ class HouseIndexForm
                 })
                 ->options([
                     'TEGEL' => 'TEGEL (4)',
-                    'PLESTER SEMEN/CAMPURAN TRASO, KERAMIK, DLL' => 'PLESTER SEMEN/CAMPURAN TRASO, KERAMIK, DLL (2)',
+                    'PLESTER SEMEN/CAMPURAN TRASO, KERAMIK,DLL' => 'PLESTER SEMEN/CAMPURAN TRASO, KERAMIK,DLL (3)',
                     'PAPAN/KAYU/BAMBU' => 'PAPAN/KAYU/BAMBU (1)',
                     'TANAH' => 'TANAH (0)',
                 ]),

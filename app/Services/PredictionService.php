@@ -5,14 +5,13 @@ namespace App\Services;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Http;
-use JetBrains\PhpStorm\NoReturn;
 
 class PredictionService
 {
     private string $url;
     private array $data;
 
-    #[NoReturn] public function __construct(array $data)
+    public function __construct(array $data)
     {
         $this->url = config('services.flask.url');
 
@@ -43,6 +42,7 @@ class PredictionService
             'luas_rumah' => $data['house_area'],
             'jenis_atap' => $data['roof_type'],
             'dinding_rumah' => $data['house_wall'],
+            'lantai_rumah' => $data['house_floor'],
             'jenis_penerangan' => $data['type_of_lighting'],
             'jenis_jamban' => $data['latrine_type'],
             'sumber_air_minum' => $data['source_of_drinking_water'],

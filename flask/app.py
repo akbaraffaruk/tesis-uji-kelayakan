@@ -31,17 +31,18 @@ def predict():
 
         # Ensure correct data types for numerical columns
         numerical_features = [
-            "konsumsi_beras", "harga_beras", "belanja_dapur", "rekening_listrik", "pendidikan", "lainnya", "simpanan_tabungan",
-            "luas_pekarangan", "total_nilai_indeks_rumah", "total_pendapatan_rumah_tangga", "jumlah_anggota_rumah_tangga",
-            "pendapatan_perkapita", "tenor", "pokok", "margin", "angsuran", "umur", "total_pengeluaran", "buyer_suami", "buyer_istri"
+            'konsumsi_beras', 'harga_beras', 'belanja_dapur', 'rekening_listrik', 'pendidikan', 'lainnya', 'simpanan_tabungan', 'luas_pekarangan', 'total_nilai_indeks_rumah', 'total_pendapatan_rumah_tangga', 'jumlah_anggota_rumah_tangga', 'pendapatan_perkapita', 'tenor', 'pokok', 'margin', 'angsuran', 'umur', 'total_pengeluaran', 'buyer_suami', 'buyer_istri'
         ]
 
         categorical_features = [
-            "pekerjaan", "sumber_pendapatan", "status_rumah", "luas_rumah", "jenis_atap", "dinding_rumah", "jenis_penerangan",
-            "jenis_jamban", "sumber_air_minum"
+            'pekerjaan', 'sumber_pendapatan', 
         ]
 
-        features = numerical_features + categorical_features
+        ordinal_features = [
+            'status_rumah', 'luas_rumah', 'jenis_atap', 'dinding_rumah', 'lantai_rumah', 'jenis_penerangan', 'jenis_jamban', 'sumber_air_minum'
+        ]
+
+        features = numerical_features + categorical_features + ordinal_features
 
         # Check if all features are present
         for feature in features:
